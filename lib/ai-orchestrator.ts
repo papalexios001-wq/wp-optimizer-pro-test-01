@@ -37,6 +37,14 @@ import {
     // ... other imports from utils
 } from '../utils';
 
+import {
+  generateEnhancedBlogContent,
+  renderBlogHTML,
+  validateBlogContent
+} from './text-aware-link-injector';
+import { injectContextualLinks } from './context-aware-link-injector';
+import { generateBlogContent } from './blog-content-generator';
+
 
 
 
