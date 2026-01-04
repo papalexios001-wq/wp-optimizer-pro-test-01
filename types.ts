@@ -208,6 +208,7 @@ export interface InternalLinkResult {
     sectionId?: string;
     matchType?: 'exact' | 'semantic' | 'contextual';
     insertedAt?: number; // HTML position
+     anchor?: string;
 }
 
 
