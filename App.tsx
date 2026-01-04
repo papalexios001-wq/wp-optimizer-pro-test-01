@@ -45,6 +45,18 @@ import {
     formatNumber, 
     formatDuration as formatDurationUI
 } from './components';
+
+
+import {
+  buildAdvancedInternalLinkEngine,
+  generateFAQAccordion,
+  renderReferenceCards,
+  fixCTALinks,
+} from './lib/content-quality-enterprise';
+
+
+
+
 import { 
     SitemapPage, ContentContract, GodModePhase, InternalLinkTarget,
     GeoTargetConfig, APP_VERSION, NeuronTerm, OptimizationMode
