@@ -1281,6 +1281,54 @@ export const DEFAULT_OPTIMIZATION_CONFIG: OptimizationModeConfig = {
     minSectionWordCount: 150
 };
 
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ENTERPRISE CONTENT QUALITY TYPES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface InternalLinkTarget {
+  url: string;
+  title: string;
+  slug: string;
+  wordCount?: number;
+  relevanceScore?: number;
+}
+
+export interface LinkInjectionResult {
+  html: string;
+  linksAdded: Array<{
+    anchor: string;
+    url: string;
+    relevanceScore: number;
+  }>;
+  linkCount: number;
+}
+
+export interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+export interface Reference {
+  url: string;
+  title: string;
+  domain?: string;
+  description?: string;
+}
+
+export interface ContentQualityOptions {
+  minLinks?: number;
+  maxLinks?: number;
+  minRelevance?: number;
+  minDistanceBetweenLinks?: number;
+  maxLinksPerSection?: number;
+  enableFAQAccordion?: boolean;
+  enableReferenceCards?: boolean;
+  fixCTAButtons?: boolean;
+}
+
+
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // 🔔 UI TYPES
 // ═══════════════════════════════════════════════════════════════════════════════
