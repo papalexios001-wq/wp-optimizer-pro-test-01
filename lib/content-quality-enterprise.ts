@@ -1926,14 +1926,5 @@ export function decodeHtmlEntities(text: string): string {
 // 📦 EXPORT ALL FUNCTIONS AND TYPES
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export {
-  buildAdvancedInternalLinkEngine,
-  generateFAQAccordion,
-  renderReferenceCards,
-  fixCTALinks,
-  calculateRelevanceScore,
-  extractDomain,
-  escapeHtml,
-  decodeHtmlEntities,
-};
+
 
