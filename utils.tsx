@@ -898,18 +898,6 @@ export interface LinkInjectionOptions {
     logQuality?: boolean;
 }
 
-export interface LinkInjectionResult {
-    html: string;
-    linksAdded: InternalLinkResult[];
-    skippedReasons: Map<string, string>;
-    qualityReport: {
-        excellent: number;
-        good: number;
-        acceptable: number;
-        rejected: number;
-        avgScore: number;
-    };
-}
 
 export function injectInternalLinks(
     html: string,
