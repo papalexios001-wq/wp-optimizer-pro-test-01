@@ -202,12 +202,12 @@ export interface AnchorVariant {
 
 export interface InternalLinkResult {
     url: string;
-    anchorText: string;
-    context: string;
-    relevanceScore: number;
+    anchorText?: string;
+    context?: string;
+    relevanceScore?: number;
     sectionId?: string;
-    matchType: 'exact' | 'semantic' | 'contextual';
-    insertedAt: number; // HTML position
+    matchType?: 'exact' | 'semantic' | 'contextual';
+    insertedAt?: number; // HTML position
 }
 
 
@@ -1299,9 +1299,10 @@ export interface LinkInjectionResult {
   linksAdded: Array<{
     anchor: string;
     url: string;
-    relevanceScore: number;
+    relevanceScore?: number;
   }>;
   linkCount: number;
+     skippedReasons?: string[];
 }
 
 export interface FAQItem {
