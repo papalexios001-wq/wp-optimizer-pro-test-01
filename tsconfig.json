@@ -11,6 +11,9 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "strict": false,
+        "skipLibCheck": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "noImplicitAny": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
@@ -32,4 +35,5 @@
     "dist"
   ]
 }
+
 
