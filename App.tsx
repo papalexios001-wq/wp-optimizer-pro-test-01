@@ -1582,82 +1582,130 @@ const log = (msg: string, _progressOrForce?: number | boolean) => {
 
                     contract.htmlContent = removeDuplicateFAQSections(contract.htmlContent, log);
 
-                    if (contract.faqs && contract.faqs.length > 0 && !hasPremiumFAQStyling(contract.htmlContent)) {
-                        contract.htmlContent = upgradeFAQSection(contract.htmlContent, contract.faqs);
-                        log(`   ✅ Upgraded FAQ section with ${contract.faqs.length} premium-styled questions`);
-                                        } else if (hasPremiumFAQStyling(contract.htmlContent)) {
-                        log(`   ✓ FAQ section already has premium styling — skipping duplicate upgrade`);
-                    }
+                                    // ═══════════════════════════════════════════════════════════════════════════
+                // 🎨 ENTERPRISE FAQ ACCORDION COMPONENT
+                // ═══════════════════════════════════════════════════════════════════════════
+                if (contract.faqs && contract.faqs.length > 0) {
+                  const faqHTML = generateFAQAccordion(
+                    contract.faqs.map(faq => ({
+                      question: faq.question,
+                      answer: faq.answer
+                    }))
+                  );
+                  
+                  // Insert FAQ section into HTML
+                  if (contract.htmlContent.includes('<!-- INSERT_FAQ -->')) {
+                    contract.htmlContent = contract.htmlContent.replace('<!-- INSERT_FAQ -->', faqHTML);
+                  } else {
+                    // Find a good insertion point (before closing body or at end)
+                    contract.htmlContent = contract.htmlContent + faqHTML;
+                  }
+                  
+                  log(` ✅ ENTERPRISE FAQ: Generated modern accordion with ${contract.faqs.length} questions, smooth animations, accessibility`);
+                }
 
-                    // ═══════════════════════════════════════════════════════════════════════════
-                    // 🔗 INTERNAL LINK INJECTION — SOTA PIPELINE
-                    // ═══════════════════════════════════════════════════════════════════════════
+
+                                // ═══════════════════════════════════════════════════════════════════════════
+                // 🎴 ENTERPRISE REFERENCE CARDS COMPONENT
+                // ═══════════════════════════════════════════════════════════════════════════
+                if (entityGapData?.validatedReferences && entityGapData.validatedReferences.length > 0) {
+                  const refHTML = renderReferenceCards(
+                    entityGapData.validatedReferences.map(ref => ({
+                      url: ref.url,
+                      title: ref.title,
+                      domain: ref.domain,
+                      description: ref.description
+                    }))
+                  );
+                  
+                  // Insert reference cards section
+                  if (contract.htmlContent.includes('<!-- INSERT_REFERENCES -->')) {
+                    contract.htmlContent = contract.htmlContent.replace('<!-- INSERT_REFERENCES -->', refHTML);
+                  } else {
+                    contract.htmlContent = contract.htmlContent + refHTML;
+                  }
+                  
+                  log(` ✅ ENTERPRISE REFERENCES: Generated beautiful reference cards for ${entityGapData.validatedReferences.length} sources with hover effects`);
+                }
+
+
+                                // ═══════════════════════════════════════════════════════════════════════════
+                // 🔧 CTA BUTTON FIXER - CONVERT BUTTONS TO WORKING LINKS
+                // ═══════════════════════════════════════════════════════════════════════════
+                const ctaFixedHtml = fixCTALinks(contract.htmlContent);
+                if (ctaFixedHtml !== contract.htmlContent) {
+                  contract.htmlContent = ctaFixedHtml;
+                  log(` ✅ ENTERPRISE CTA FIX: Converted non-functional buttons to proper working links with gradient styling`);
+                }
+
+
                     
-                    log(`🔗 Discovering and injecting internal links...`, true);
+
+                                    // ═══════════════════════════════════════════════════════════════════════════
+                // 🔗 ENTERPRISE INTERNAL LINK INJECTION — SOTA RELEVANCE SCORING PIPELINE
+                // ═══════════════════════════════════════════════════════════════════════════
+                log(`🔗 Discovering and injecting SOTA internal links with relevance scoring...`, true);
+                try {
+                  const wpLinkTargets = await discoverInternalLinkTargets(
+                    store.wpConfig.url,
+                    auth,
+                    { excludePostId: postId || undefined, excludeUrls: [targetId], maxPosts: 100 },
+                    (msg) => log(msg)
+                  );
+                  const seenUrls = new Set(wpLinkTargets.map(t => t.url.toLowerCase()));
+                  const storeLinkTargets = internalLinks
+                    .filter(l => !seenUrls.has(l.url.toLowerCase()))
+                    .slice(0, 30);
+                  const allLinkTargets = [...wpLinkTargets, ...storeLinkTargets];
+                  log(` 📋 Link targets: ${wpLinkTargets.length} from WP + ${storeLinkTargets.length} from store = ${allLinkTargets.length} total`);
+                  
+                  if (allLinkTargets.length > 0 && contract.htmlContent) {
+                    // 🎯 USE NEW ENTERPRISE ENGINE
+                    const linkResult = buildAdvancedInternalLinkEngine(
+                      contract.htmlContent,
+                      allLinkTargets,
+                      topic,  // Use the topic/keyword from current execution
+                      {
+                        minLinks: 12,
+                        maxLinks: 25,
+                        minRelevance: 0.55,
+                        minDistanceBetweenLinks: 450,
+                        maxLinksPerSection: 2,
+                      }
+                    );
                     
-                    try {
-                        const wpLinkTargets = await discoverInternalLinkTargets(
-                            store.wpConfig.url,
-                            auth,
-                            { 
-                                excludePostId: postId || undefined, 
-                                excludeUrls: [targetId], 
-                                maxPosts: 100 
-                            },
-                            (msg) => log(msg)
-                        );
-                        
-                        const seenUrls = new Set(wpLinkTargets.map(t => t.url.toLowerCase()));
-                        const storeLinkTargets = internalLinks
-                            .filter(l => !seenUrls.has(l.url.toLowerCase()))
-                            .slice(0, 30);
-                        
-                        const allLinkTargets = [...wpLinkTargets, ...storeLinkTargets];
-                        
-                        log(`   📋 Link targets: ${wpLinkTargets.length} from WP + ${storeLinkTargets.length} from store = ${allLinkTargets.length} total`);
-                        
-                        if (allLinkTargets.length > 0 && contract.htmlContent) {
-                            const linkResult = injectInternalLinks(
-                                contract.htmlContent,
-                                allLinkTargets,
-                                targetId,
-                                {
-                                    minLinks: 12,
-                                    maxLinks: 25,
-                                    minRelevance: 0.55,
-                                    minDistanceBetweenLinks: 450,
-                                    maxLinksPerSection: 2
-                                }
-                            );
-                            
-                            contract.htmlContent = linkResult.html;
-                            contract.internalLinks = linkResult.linksAdded;
-                            
-                            log(`   ✅ Injected ${linkResult.linksAdded.length} internal links`, true);
-                            
-                            const excellent = linkResult.linksAdded.filter(l => l.relevanceScore >= 0.8).length;
-                            const good = linkResult.linksAdded.filter(l => l.relevanceScore >= 0.6 && l.relevanceScore < 0.8).length;
-                            const acceptable = linkResult.linksAdded.filter(l => l.relevanceScore < 0.6).length;
-                            log(`   📊 Quality: ${excellent} excellent | ${good} good | ${acceptable} acceptable`, true);
-                        } else {
-                            log(`   ⚠️ No link targets available`, true);
-                        }
-                    } catch (linkErr: any) {
-                        log(`   ⚠️ Link injection failed: ${linkErr.message}`, true);
-                        
-                        if (internalLinks.length > 0 && contract.htmlContent) {
-                            log(`   🔄 Fallback: Using store pages...`, true);
-                            const fallbackResult = injectInternalLinks(
-                                contract.htmlContent,
-                                internalLinks,
-                                targetId,
-                                { minLinks: 6, maxLinks: 15, minRelevance: 0.4 }
-                            );
-                            contract.htmlContent = fallbackResult.html;
-                            contract.internalLinks = fallbackResult.linksAdded;
-                            log(`   ✅ Fallback injected ${fallbackResult.linksAdded.length} links`, true);
-                        }
-                    }
+                    contract.htmlContent = linkResult.html;
+                    contract.internalLinks = linkResult.linksAdded;
+                    log(` ✅ ENTERPRISE INJECTION: ${linkResult.linkCount} internal links with relevance scoring`, true);
+                    
+                    const excellent = linkResult.linksAdded.filter(l => l.relevanceScore >= 0.8).length;
+                    const good = linkResult.linksAdded.filter(l => l.relevanceScore >= 0.6 && l.relevanceScore < 0.8).length;
+                    const acceptable = linkResult.linksAdded.filter(l => l.relevanceScore < 0.6).length;
+                    
+                    log(` 📊 QUALITY BREAKDOWN: ${excellent} EXCELLENT (0.8+) | ${good} GOOD (0.6-0.8) | ${acceptable} ACCEPTABLE (0.55-0.6)`, true);
+                  } else {
+                    log(` ⚠️ No link targets available`, true);
+                  }
+                } catch (linkErr: any) {
+                  log(` ⚠️ Enterprise link injection failed: ${linkErr.message}`, true);
+                  if (internalLinks.length > 0 && contract.htmlContent) {
+                    log(` 🔄 Fallback: Using store pages with standard relevance...`, true);
+                    const fallbackResult = buildAdvancedInternalLinkEngine(
+                      contract.htmlContent,
+                      internalLinks,
+                      topic,
+                      {
+                        minLinks: 6,
+                        maxLinks: 15,
+                        minRelevance: 0.4,
+                      }
+                    );
+                    contract.htmlContent = fallbackResult.html;
+                    contract.internalLinks = fallbackResult.linksAdded;
+                    log(` ✅ Fallback injected ${fallbackResult.linkCount} links with fallback engine`, true);
+                  }
+                }
+
 
 
 
