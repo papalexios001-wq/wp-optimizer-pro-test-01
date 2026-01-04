@@ -13,7 +13,11 @@ import {
     NeuronTerm, ExistingContentAnalysis, EntityGapAnalysis, InternalLinkTarget,
     OpportunityScore, SerpLengthPolicy, ScoreBreakdown,
     CURRENT_SCORE_WEIGHTS, QARuleContext, QADetectionResult,
-    InternalLinkResult, ValidatedReference, SiteContext
+    InternalLinkResult, ValidatedReference, SiteContext, 
+    InternalLinkTarget as EnterpriseInternalLinkTarget,
+  LinkInjectionResult,
+  FAQItem,
+  Reference,
 } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════════
